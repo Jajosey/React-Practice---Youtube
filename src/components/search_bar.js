@@ -18,17 +18,18 @@ class SearchBar extends Component{
     render(){
         //whenever there is a single line arrow function, you dont have to have the left side in ()
         return(
-            <div>
+            <div className="search-bar">
                 <input
                     value = {this.state.term}
-                    onChange={event => this.setState({term: event.target.value})}/>
+                    onChange={event => this.onInputChange(event.target.value)}/>
             </div>
             )
     }
 
     //create an event handler
-    onInputChange(event) {
-        console.log(event.target.value)
+    onInputChange(term) {
+      this.setState({term});
+      this.props.onSearchTermChange(term);
     }
 }
 

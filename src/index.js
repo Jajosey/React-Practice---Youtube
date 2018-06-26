@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import YTSearch from 'youtube-api-search';
+import _ from 'lodash';
 
 // must give a file reference ./ to distinguish the path for components we make
 // not necessary for installed libraries
@@ -23,20 +24,34 @@ class App extends Component {
     constructor(props){
         super(props);
 
-        this.state = { videos: [] };
+        this.state = { videos: [],
+        selectedVideo: null
+      };
+      this.videoSearch('Tennessee Titans');
+    }
 
-        YTSearch({key: API_KEY, term: 'surfboards'}, (videos)=>{
+    videoSearch(term){
+      YTSearch({key: API_KEY, term: term}, (videos)=>{
             //short for this.setState(videos : videos) (when key and value are the same)
-
-            this.setState({ videos });
+            this.setState({
+               videos : videos,
+               selectedVideo: videos[0]
+             });
         });
     }
+
     render(){
+      //debounce returns a new function that can only be called once every X
+      // where X is the 2nd parameter in milliseconds
+      const videoSearch = _.debounce((term) => { this.videoSearch(term)}, 500);
+
         return(
             <div>
-                <SearchBar />
-                <VideoDetail video={this.state.videos[0]}/>
-                <VideoList videos={this.state.videos}/>
+                <SearchBar onSearchTermChange={videoSearch}/>
+                <VideoDetail video={this.state.selectedVideo}/>
+                <VideoList
+                  onVideoSelect={selectedVideo => this.setState({selectedVideo})}
+                  videos={this.state.videos}/>
             </div>
         );
     }
